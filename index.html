@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title>Niveaux d'eau — IWLS</title>
+  <title>Navigation — Port de Montréal</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -31,7 +31,6 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ── Header ── */
     header {
       padding: 18px 20px 14px;
       display: flex;
@@ -47,10 +46,8 @@
       color: var(--muted);
       text-transform: uppercase;
     }
-
     .header-title span { color: var(--accent2); }
 
-    /* ── Bouton refresh ── */
     #btn-refresh {
       background: none;
       border: 1px solid var(--border);
@@ -66,47 +63,43 @@
       transition: border-color 0.2s, color 0.2s;
       -webkit-tap-highlight-color: transparent;
     }
-
     #btn-refresh:hover  { border-color: var(--accent); color: var(--accent); }
     #btn-refresh:active { opacity: 0.7; }
+    #btn-refresh.loading .icon-refresh { animation: spin 0.8s linear infinite; }
+    @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
 
-    #btn-refresh.loading .icon-refresh {
-      animation: spin 0.8s linear infinite;
-    }
-
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to   { transform: rotate(360deg); }
-    }
-
-    /* ── Contenu principal ── */
     main {
-      padding: 18px 20px;
+      padding: 4px 20px 24px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
       max-width: 600px;
       margin: 0 auto;
     }
 
-    /* ── Carte station ── */
+    .section-title {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+      text-transform: uppercase;
+      padding: 18px 0 8px;
+    }
+
+    .cards-group { display: flex; flex-direction: column; gap: 12px; }
+
     .station-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 12px;
       overflow: hidden;
       opacity: 0;
-      transform: translateY(10px);
+      transform: translateY(8px);
       animation: fadeUp 0.35s ease forwards;
     }
-
-    .station-card:nth-child(1) { animation-delay: 0.05s; }
-    .station-card:nth-child(2) { animation-delay: 0.12s; }
-    .station-card:nth-child(3) { animation-delay: 0.19s; }
-
-    @keyframes fadeUp {
-      to { opacity: 1; transform: translateY(0); }
-    }
+    .station-card:nth-child(1){animation-delay:0.04s}
+    .station-card:nth-child(2){animation-delay:0.09s}
+    .station-card:nth-child(3){animation-delay:0.14s}
+    @keyframes fadeUp { to{opacity:1;transform:translateY(0)} }
 
     .station-header {
       padding: 13px 16px 11px;
@@ -115,38 +108,18 @@
       justify-content: space-between;
       align-items: center;
     }
-
-    .station-name {
-      font-size: 13px;
-      font-weight: 500;
-      letter-spacing: 0.01em;
-    }
-
-    .station-meta {
-      font-family: var(--mono);
-      font-size: 9px;
-      color: var(--muted);
-      margin-top: 3px;
-    }
+    .station-name { font-size: 13px; font-weight: 500; }
+    .station-meta { font-family: var(--mono); font-size: 9px; color: var(--muted); margin-top: 3px; }
 
     .status-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--muted);
-      flex-shrink: 0;
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--muted); flex-shrink: 0;
     }
-
     .status-dot.ok   { background: var(--ok);  box-shadow: 0 0 6px var(--ok); }
     .status-dot.err  { background: var(--err); box-shadow: 0 0 6px var(--err); }
     .status-dot.load { background: var(--warn); animation: blink 1s ease infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
 
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50%       { opacity: 0.25; }
-    }
-
-    /* ── Grille de données ── */
     .data-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -156,10 +129,10 @@
 
     .data-cell {
       background: var(--surface);
-      padding: 14px 16px 12px;
+      padding: 13px 16px 11px;
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      gap: 4px;
     }
 
     .cell-label {
@@ -172,73 +145,53 @@
 
     .cell-value {
       font-family: var(--mono);
-      font-size: 28px;
+      font-size: 26px;
       font-weight: 300;
       color: var(--text);
       line-height: 1;
       letter-spacing: -0.02em;
     }
+    .cell-value .unit { font-size: 12px; color: var(--muted); margin-left: 2px; font-weight: 400; }
+    .cell-value.blue  { color: var(--accent2); }
+    .cell-value.warm  { color: #fb923c; }
+    .cell-value.red   { color: var(--err); }
+    .cell-value.na    { color: var(--muted); font-size: 14px; padding-top: 4px; }
+    .cell-time { font-family: var(--mono); font-size: 9px; color: var(--muted); }
 
-    .cell-value .unit {
-      font-size: 13px;
-      color: var(--muted);
-      margin-left: 2px;
-      font-weight: 400;
+    .forecast-body { padding: 14px 16px; }
+    .forecast-period {
+      font-family: var(--mono); font-size: 9px;
+      color: var(--muted); letter-spacing: 0.1em; margin-bottom: 10px;
+    }
+    .forecast-temps { display: flex; gap: 20px; margin-bottom: 12px; flex-wrap: wrap; }
+    .forecast-text {
+      font-family: var(--sans); font-size: 12px; color: #94a3b8;
+      line-height: 1.65; border-top: 1px solid var(--border); padding-top: 10px;
     }
 
-    .cell-value.blue { color: var(--accent2); }
-    .cell-value.warm { color: #fb923c; }
-    .cell-value.na   { color: var(--muted); font-size: 15px; padding-top: 4px; }
-
-    .cell-time {
-      font-family: var(--mono);
-      font-size: 9px;
-      color: var(--muted);
-    }
-
-    /* ── Skeleton ── */
     .skeleton {
-      height: 28px;
-      width: 90px;
-      border-radius: 4px;
-      background: linear-gradient(90deg,
-        var(--border) 25%, #1e2d3d 50%, var(--border) 75%);
+      height: 26px; width: 85px; border-radius: 4px;
+      background: linear-gradient(90deg,var(--border) 25%,#1e2d3d 50%,var(--border) 75%);
       background-size: 200% 100%;
       animation: shimmer 1.3s infinite;
     }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
-    @keyframes shimmer {
-      0%   { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
+    .error-msg { font-family: var(--mono); font-size: 11px; color: var(--err); padding: 14px 16px; }
 
-    /* ── Erreur inline ── */
-    .error-msg {
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--err);
-      padding: 14px 16px;
-    }
-
-    /* ── Footer ── */
     footer {
       padding: 14px 20px;
-      font-family: var(--mono);
-      font-size: 9px;
-      color: var(--muted);
+      font-family: var(--mono); font-size: 9px; color: var(--muted);
       border-top: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      max-width: 600px;
-      margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+      max-width: 600px; margin: 0 auto;
     }
   </style>
 </head>
 <body>
 
 <header>
-  <div class="header-title">IWLS — <span>Niveaux d'eau</span></div>
+  <div class="header-title">PORT MTL — <span>Navigation</span></div>
   <button id="btn-refresh" onclick="rafraichirTout()">
     <svg class="icon-refresh" width="12" height="12" viewBox="0 0 24 24"
          fill="none" stroke="currentColor" stroke-width="2.5"
@@ -250,19 +203,25 @@
   </button>
 </header>
 
-<main id="stations-container"></main>
+<main>
+  <div class="section-title">Fleuve Saint-Laurent — IWLS</div>
+  <div class="cards-group" id="group-iwls"></div>
+
+  <div class="section-title">Météo — McTavish (WTA)</div>
+  <div class="cards-group" id="group-meteo"></div>
+
+  <div class="section-title">Prévisions — Montréal</div>
+  <div class="cards-group" id="group-prev"></div>
+</main>
 
 <footer>
-  <span>Pêches et Océans Canada — API IWLS</span>
+  <span>IWLS · Environnement Canada</span>
   <span id="last-update">—</span>
 </footer>
 
 <script>
 // ══════════════════════════════════════════════════════
-//  CONFIGURATION
-//  Pour ajouter une station plus tard, ajoutez un objet
-//  dans ce tableau avec alternativeName (nom dans l'API),
-//  displayName (nom affiché) et les codes de séries.
+//  CONFIG IWLS
 // ══════════════════════════════════════════════════════
 const STATIONS_CONFIG = [
   {
@@ -270,182 +229,298 @@ const STATIONS_CONFIG = [
     displayName:     'Montréal — Jetée #1',
     series: ['wlo', 'wt1'],
   },
-  // Exemple pour ajouter une station :
-  // {
-  //   alternativeName: 'Quebec',
-  //   displayName:     'Québec',
-  //   series: ['wlo', 'wt'],
-  // },
+  // Ajouter d'autres stations IWLS ici :
+  // { alternativeName: 'Quebec', displayName: 'Québec', series: ['wlo', 'wt1'] },
 ];
 
-const API_BASE = 'https://api.iwls-sine.azure.cloud-nuage.dfo-mpo.gc.ca';
-
+const IWLS_BASE   = 'https://api.iwls-sine.azure.cloud-nuage.dfo-mpo.gc.ca';
 const SERIES_META = {
   wlo: { label: 'Niveau observé',  unit: 'm',  cls: 'blue' },
   wlp: { label: 'Niveau prédit',   unit: 'm',  cls: 'blue' },
-  wlf: { label: 'Niveau prévu',    unit: 'm',  cls: 'blue' },
-  wt:   { label: 'Température eau', unit: '°C', cls: 'warm' },
-  wt1:  { label: 'Température eau', unit: '°C', cls: 'warm' },
+  wt:  { label: 'Température eau', unit: '°C', cls: 'warm' },
+  wt1: { label: 'Température eau', unit: '°C', cls: 'warm' },
 };
 
 // ══════════════════════════════════════════════════════
-//  ÉTAT GLOBAL
+//  CONFIG MÉTÉO EC
 // ══════════════════════════════════════════════════════
-let stationIds = {};   // alternativeName → id
+// Observations temps réel — station McTavish (WTA), la plus proche du port
+const EC_OBS_URL = 'https://api.weather.gc.ca/collections/swob-realtime/items'
+                 + '?lang=fr&limit=1&sortby=-date_tm-value&tc_id-value=WTA&f=json';
+
+// Prévisions — Montréal (citypage-weather)
+const EC_PREV_URL = 'https://api.weather.gc.ca/collections/citypage-weather/items'
+                  + '?lang=fr&limit=8&location-name=Montreal&f=json';
+
+// ══════════════════════════════════════════════════════
+//  ÉTAT
+// ══════════════════════════════════════════════════════
+let stationIds = {};
 let isLoading  = false;
 
 // ══════════════════════════════════════════════════════
-//  APPELS API
+//  UTILITAIRES
 // ══════════════════════════════════════════════════════
-async function chargerIndex() {
-  const r = await fetch(`${API_BASE}/api/v1/stations`);
+function degToCardinal(deg) {
+  if (deg == null) return '—';
+  const d = ['N','NNE','NE','ENE','E','ESE','SE','SSE',
+             'S','SSO','SO','OSO','O','ONO','NO','NNO'];
+  return d[Math.round(deg / 22.5) % 16];
+}
+
+function fmt(isoStr) {
+  if (!isoStr) return '—';
+  return new Date(isoStr).toLocaleTimeString('fr-CA',
+    { hour: '2-digit', minute: '2-digit' });
+}
+
+function cellHTML(label, val, unit, cls, temps) {
+  if (val == null)
+    return `<div class="cell-label">${label}</div>
+            <div class="cell-value na">N/D</div>
+            <div class="cell-time">—</div>`;
+  return `<div class="cell-label">${label}</div>
+          <div class="cell-value ${cls||''}">${val}<span class="unit">${unit||''}</span></div>
+          <div class="cell-time">${temps||'—'}</div>`;
+}
+
+function skeletonCell(label) {
+  return `<div class="data-cell">
+            <div class="cell-label">${label}</div>
+            <div class="skeleton"></div>
+            <div class="cell-time">—</div>
+          </div>`;
+}
+
+// ══════════════════════════════════════════════════════
+//  IWLS — Fetch
+// ══════════════════════════════════════════════════════
+async function chargerIndexIWLS() {
+  const r = await fetch(`${IWLS_BASE}/api/v1/stations`);
   if (!r.ok) throw new Error(`HTTP ${r.status}`);
-  for (const s of await r.json()) {
+  for (const s of await r.json())
     if (s.alternativeName) stationIds[s.alternativeName] = s.id;
-  }
 }
 
-async function fetchValeur(stationId, code) {
+async function fetchIWLS(sid, code) {
   const now  = new Date();
-  const to   = encodeURIComponent(now.toISOString().slice(0, -1) + 'Z');
-  const from = encodeURIComponent(
-    new Date(now - 3600000).toISOString().slice(0, -1) + 'Z'
-  );
-  const url = `${API_BASE}/api/v1/stations/${stationId}/data`
-            + `?time-series-code=${code}&from=${from}&to=${to}&resolution=ONE_MINUTE`;
-  const r = await fetch(url);
+  const to   = encodeURIComponent(now.toISOString().replace(/\.\d+Z$/, 'Z'));
+  const from = encodeURIComponent(new Date(now-3600000).toISOString().replace(/\.\d+Z$/, 'Z'));
+  const r = await fetch(`${IWLS_BASE}/api/v1/stations/${sid}/data`
+    + `?time-series-code=${code}&from=${from}&to=${to}&resolution=ONE_MINUTE`);
   if (!r.ok) return null;
-  const data = await r.json();
-  return data?.length > 0 ? data[0] : null;
+  const d = await r.json();
+  return d?.length > 0 ? d[0] : null;
 }
 
 // ══════════════════════════════════════════════════════
-//  RENDU
+//  IWLS — Rendu
 // ══════════════════════════════════════════════════════
-function cardId(config) {
-  return 'card-' + config.alternativeName.replace(/\s+/g, '-');
-}
+function cid(cfg) { return 'card-' + cfg.alternativeName.replace(/\s+/g, '-'); }
 
-function creerCarte(config) {
-  const id   = cardId(config);
-  const card = document.createElement('div');
-  card.className = 'station-card';
-  card.id = id;
-  card.innerHTML = `
+function creerCarteIWLS(cfg) {
+  const id = cid(cfg);
+  const el = document.createElement('div');
+  el.className = 'station-card'; el.id = id;
+  el.innerHTML = `
     <div class="station-header">
       <div>
-        <div class="station-name">${config.displayName}</div>
+        <div class="station-name">${cfg.displayName}</div>
         <div class="station-meta" id="meta-${id}">—</div>
       </div>
       <div class="status-dot load" id="dot-${id}"></div>
     </div>
     <div class="data-grid" id="grid-${id}">
-      ${config.series.map(code => `
-        <div class="data-cell" id="cell-${id}-${code}">
-          <div class="cell-label">${(SERIES_META[code] || {label: code}).label}</div>
-          <div class="skeleton"></div>
-          <div class="cell-time">—</div>
-        </div>
-      `).join('')}
-    </div>
-  `;
-  return card;
+      ${cfg.series.map(c => skeletonCell((SERIES_META[c]||{label:c}).label)).join('')}
+    </div>`;
+  return el;
 }
 
-function afficherValeur(cid, code, point) {
-  const cell = document.getElementById(`cell-${cid}-${code}`);
-  if (!cell) return;
-  const meta = SERIES_META[code] || { label: code, unit: '', cls: '' };
-
-  if (!point || point.value == null) {
-    cell.innerHTML = `
-      <div class="cell-label">${meta.label}</div>
-      <div class="cell-value na">N/D</div>
-      <div class="cell-time">Non disponible</div>
-    `;
-    return;
-  }
-
-  const val  = parseFloat(point.value).toFixed(2);
-  const time = point.eventDate
-    ? new Date(point.eventDate).toLocaleTimeString('fr-CA',
-        { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-    : '—';
-
-  cell.innerHTML = `
-    <div class="cell-label">${meta.label}</div>
-    <div class="cell-value ${meta.cls}">${val}<span class="unit">${meta.unit}</span></div>
-    <div class="cell-time">${time}</div>
-  `;
-}
-
-// ══════════════════════════════════════════════════════
-//  CHARGEMENT PAR STATION
-// ══════════════════════════════════════════════════════
-async function chargerStation(config) {
-  const cid  = cardId(config);
-  const dot  = document.getElementById(`dot-${cid}`);
-  const meta = document.getElementById(`meta-${cid}`);
-
+async function chargerIWLS(cfg) {
+  const id  = cid(cfg);
+  const dot = document.getElementById(`dot-${id}`);
+  const met = document.getElementById(`meta-${id}`);
   try {
-    if (!stationIds[config.alternativeName]) await chargerIndex();
-
-    const sid = stationIds[config.alternativeName];
-    if (!sid) throw new Error('Station introuvable dans l\'API');
-
-    if (meta) meta.textContent = `ID ${sid}`;
-
-    const resultats = await Promise.all(
-      config.series.map(code => fetchValeur(sid, code))
-    );
-
-    config.series.forEach((code, i) => afficherValeur(cid, code, resultats[i]));
-
+    if (!stationIds[cfg.alternativeName]) await chargerIndexIWLS();
+    const sid = stationIds[cfg.alternativeName];
+    if (!sid) throw new Error('Station introuvable');
+    if (met) met.textContent = `ID ${sid}`;
+    const vals = await Promise.all(cfg.series.map(c => fetchIWLS(sid, c)));
+    const grid = document.getElementById(`grid-${id}`);
+    grid.innerHTML = cfg.series.map((c, i) => {
+      const m = SERIES_META[c] || { label: c, unit: '', cls: '' };
+      const pt = vals[i];
+      return `<div class="data-cell">${cellHTML(
+        m.label,
+        pt?.value != null ? parseFloat(pt.value).toFixed(2) : null,
+        m.unit, m.cls,
+        pt?.eventDate ? fmt(pt.eventDate) : '—'
+      )}</div>`;
+    }).join('');
     if (dot) dot.className = 'status-dot ok';
-
   } catch (err) {
     if (dot) dot.className = 'status-dot err';
-    const grid = document.getElementById(`grid-${cid}`);
-    if (grid) grid.innerHTML = `<div class="error-msg">Erreur : ${err.message}</div>`;
-    console.error(config.alternativeName, err);
+    const g = document.getElementById(`grid-${id}`);
+    if (g) g.innerHTML = `<div class="error-msg">Erreur : ${err.message}</div>`;
   }
 }
 
 // ══════════════════════════════════════════════════════
-//  RAFRAÎCHISSEMENT
+//  MÉTÉO EC — Observations
+// ══════════════════════════════════════════════════════
+function creerCarteObs() {
+  const el = document.createElement('div');
+  el.className = 'station-card'; el.id = 'card-obs';
+  el.innerHTML = `
+    <div class="station-header">
+      <div>
+        <div class="station-name">Observations actuelles</div>
+        <div class="station-meta">McTavish (WTA) · Environnement Canada</div>
+      </div>
+      <div class="status-dot load" id="dot-obs"></div>
+    </div>
+    <div class="data-grid" id="grid-obs">
+      ${skeletonCell('Température air')}
+      ${skeletonCell('Vent moyen')}
+      ${skeletonCell('Direction vent')}
+      ${skeletonCell('Rafale max (1h)')}
+      ${skeletonCell('Précipitations (1h)')}
+      ${skeletonCell('Pression')}
+    </div>`;
+  return el;
+}
+
+async function chargerObs() {
+  const dot = document.getElementById('dot-obs');
+  try {
+    const r = await fetch(EC_OBS_URL);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const d = await r.json();
+    const p = d.features?.[0]?.properties;
+    if (!p) throw new Error('Aucune donnée');
+
+    const t   = fmt(p['date_tm-value']);
+    const dir = p['avg_wnd_dir_10m_pst1mt'];
+    const dirTxt = dir != null
+      ? `${degToCardinal(dir)}<span class="unit"> ${dir}°</span>`
+      : `<span class="cell-value na">N/D</span>`;
+
+    document.getElementById('grid-obs').innerHTML = `
+      <div class="data-cell">${cellHTML('Température air',  p['air_temp']?.toFixed(1),                 '°C',   'warm', t)}</div>
+      <div class="data-cell">${cellHTML('Vent moyen',       p['avg_wnd_spd_10m_pst1mt']?.toFixed(1),   ' km/h','blue', t)}</div>
+      <div class="data-cell">
+        <div class="cell-label">Direction vent</div>
+        <div class="cell-value">${dirTxt}</div>
+        <div class="cell-time">${t}</div>
+      </div>
+      <div class="data-cell">${cellHTML('Rafale max (1h)',   p['max_wnd_spd_10m_pst1hr']?.toFixed(1),   ' km/h','red',  t)}</div>
+      <div class="data-cell">${cellHTML('Précipitations (1h)',p['pcpn_amt_pst1hr']?.toFixed(1),         ' mm',  'blue', t)}</div>
+      <div class="data-cell">${cellHTML('Pression',          p['stn_pres']?.toFixed(1),                 ' hPa', '',     t)}</div>
+    `;
+    if (dot) dot.className = 'status-dot ok';
+  } catch (err) {
+    if (dot) dot.className = 'status-dot err';
+    const g = document.getElementById('grid-obs');
+    if (g) g.innerHTML = `<div class="error-msg">Erreur météo : ${err.message}</div>`;
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  MÉTÉO EC — Prévisions
+// ══════════════════════════════════════════════════════
+function creerCartePrev() {
+  const el = document.createElement('div');
+  el.className = 'station-card'; el.id = 'card-prev';
+  el.innerHTML = `
+    <div class="station-header">
+      <div>
+        <div class="station-name">Prévisions du jour</div>
+        <div class="station-meta">Environnement Canada · Montréal</div>
+      </div>
+      <div class="status-dot load" id="dot-prev"></div>
+    </div>
+    <div class="forecast-body" id="body-prev">
+      <div class="skeleton" style="width:100%;height:13px;margin-bottom:10px;"></div>
+      <div class="skeleton" style="width:60%;height:13px;"></div>
+    </div>`;
+  return el;
+}
+
+async function chargerPrev() {
+  const dot  = document.getElementById('dot-prev');
+  const body = document.getElementById('body-prev');
+  try {
+    const r = await fetch(EC_PREV_URL);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const d = await r.json();
+
+    // L'API citypage retourne plusieurs périodes — on prend les 2 premières
+    const features = d.features || [];
+    if (!features.length) throw new Error('Aucune prévision');
+
+    let html = '';
+    const toShow = features.slice(0, 2);
+
+    for (const feat of toShow) {
+      const p = feat.properties;
+      const periode   = p['period-value'] || p['forecast_period-value'] || '—';
+      const texte     = p['text_summary_fr-value'] || p['forecast_text_fr-value'] || null;
+      const tmax      = p['temperature_max-value']  ?? p['air_temp_max-value']  ?? null;
+      const tmin      = p['temperature_min-value']  ?? p['air_temp_min-value']  ?? null;
+      const pop       = p['pop-value'] ?? null;
+      const condition = p['condition-value'] || p['sky_condition-value'] || null;
+
+      html += `<div style="margin-bottom:${toShow.length > 1 ? '16px' : '0'};">`;
+      html += `<div class="forecast-period">${periode}</div>`;
+
+      if (condition)
+        html += `<div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:10px;">${condition}</div>`;
+
+      if (tmax != null || tmin != null || pop != null) {
+        html += `<div class="forecast-temps">`;
+        if (tmax != null) html += `<div><div class="cell-label">MAX</div>
+          <div class="cell-value warm" style="font-size:22px;">${tmax}<span class="unit">°C</span></div></div>`;
+        if (tmin != null) html += `<div><div class="cell-label">MIN</div>
+          <div class="cell-value blue" style="font-size:22px;">${tmin}<span class="unit">°C</span></div></div>`;
+        if (pop != null)  html += `<div><div class="cell-label">PROB. PRÉCIP.</div>
+          <div class="cell-value" style="font-size:22px;">${pop}<span class="unit">%</span></div></div>`;
+        html += `</div>`;
+      }
+
+      if (texte) html += `<div class="forecast-text">${texte}</div>`;
+      html += `</div>`;
+    }
+
+    if (!html) html = `<div style="font-family:var(--mono);font-size:11px;color:var(--muted);">
+                         Données de prévision non disponibles.</div>`;
+
+    body.innerHTML = html;
+    if (dot) dot.className = 'status-dot ok';
+  } catch (err) {
+    if (dot) dot.className = 'status-dot err';
+    if (body) body.innerHTML = `<div class="error-msg">Erreur prévisions : ${err.message}</div>`;
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  RAFRAÎCHISSEMENT GLOBAL
 // ══════════════════════════════════════════════════════
 async function rafraichirTout() {
   if (isLoading) return;
   isLoading = true;
-
   const btn = document.getElementById('btn-refresh');
-  btn.classList.add('loading');
-  btn.disabled = true;
+  btn.classList.add('loading'); btn.disabled = true;
+  document.querySelectorAll('.status-dot')
+    .forEach(d => d.className = 'status-dot load');
 
-  // Remettre les skeletons
-  for (const config of STATIONS_CONFIG) {
-    const cid = cardId(config);
-    const dot = document.getElementById(`dot-${cid}`);
-    if (dot) dot.className = 'status-dot load';
-    for (const code of config.series) {
-      const cell = document.getElementById(`cell-${cid}-${code}`);
-      if (cell) {
-        const meta = SERIES_META[code] || { label: code };
-        cell.innerHTML = `
-          <div class="cell-label">${meta.label}</div>
-          <div class="skeleton"></div>
-          <div class="cell-time">—</div>
-        `;
-      }
-    }
-  }
+  await Promise.all([
+    ...STATIONS_CONFIG.map(chargerIWLS),
+    chargerObs(),
+    chargerPrev(),
+  ]);
 
-  await Promise.all(STATIONS_CONFIG.map(chargerStation));
-
-  btn.classList.remove('loading');
-  btn.disabled = false;
+  btn.classList.remove('loading'); btn.disabled = false;
   isLoading = false;
-
   document.getElementById('last-update').textContent =
     'Mis à jour : ' + new Date().toLocaleTimeString('fr-CA',
       { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -455,10 +530,10 @@ async function rafraichirTout() {
 //  INIT
 // ══════════════════════════════════════════════════════
 (function init() {
-  const container = document.getElementById('stations-container');
-  for (const config of STATIONS_CONFIG) {
-    container.appendChild(creerCarte(config));
-  }
+  for (const cfg of STATIONS_CONFIG)
+    document.getElementById('group-iwls').appendChild(creerCarteIWLS(cfg));
+  document.getElementById('group-meteo').appendChild(creerCarteObs());
+  document.getElementById('group-prev').appendChild(creerCartePrev());
   rafraichirTout();
 })();
 </script>

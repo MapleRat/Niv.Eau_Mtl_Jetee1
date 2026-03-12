@@ -15,7 +15,7 @@
       --accent2: #06b6d4;
       --text:    #e2e8f0;
       --label:   #8faabf;
-      --muted:   #667e96;
+      --muted:   #67829e;
       --ok:      #22c55e;
       --warn:    #f59e0b;
       --err:     #ef4444;
@@ -138,8 +138,8 @@
 
     .section-title {
       font-family: var(--mono);
-      font-size: 11px;
-      letter-spacing: 0.16em;
+      font-size: 12px;
+      letter-spacing: 0.17em;
       color: var(--muted);
       text-transform: uppercase;
       padding: 18px 0 8px;
@@ -334,15 +334,15 @@
   <!-- ══════════════════════════════════
        SECTION 1 — JOURNAL DU JOUR
        ══════════════════════════════════ -->
-  <div class="section-title">Journal du jour — Fleuve Montréal à Trois-Rivières</div>
+  <div class="section-title">Journal du jour</div>
   <div class="cards-group">
 
     <!-- Vent marin (nœuds) -->
     <div class="card" id="card-marine">
       <div class="card-header">
         <div>
-          <div class="card-title">Prévisions marines</div>
-          <div class="card-source" id="src-marine">Environnement Canada · m0000077</div>
+          <div class="card-title">Prévisions maritimes</div>
+          <div class="card-source" id="src-marine">Environnement Canada · Fleuve St-Laurent, Montréal à Trois-Rivières</div>
         </div>
         <div class="status-dot load" id="dot-marine"></div>
       </div>
@@ -356,36 +356,18 @@
       </div>
     </div>
 
-    <!-- Conditions météo terrestres -->
-    <div class="card" id="card-conditions">
-      <div class="card-header">
-        <div>
-          <div class="card-title">Conditions — Longueuil</div>
-          <div class="card-source">Environnement Canada · qc-109</div>
-        </div>
-        <div class="status-dot load" id="dot-conditions"></div>
-      </div>
-      <div id="body-conditions">
-        <div class="data-grid">
-          <div class="data-cell"><div class="cell-label">Max / Min</div><div class="skeleton"></div></div>
-          <div class="data-cell"><div class="cell-label">Conditions</div><div class="skeleton"></div></div>
-          <div class="data-cell wide"><div class="cell-label">Résumé</div><div class="skeleton" style="width:100%;margin-top:4px;"></div></div>
-        </div>
-      </div>
-    </div>
-
     <!-- Données IWLS -->
     <div class="card" id="card-iwls">
       <div class="card-header">
         <div>
-          <div class="card-title">Fleuve — Jetée #1</div>
-          <div class="card-source">IWLS · Pêches et Océans Canada</div>
+          <div class="card-title">Fleuve St-Laurent</div>
+          <div class="card-source">Pêches et Océans Canada - Montréal Jetée #1</div>
         </div>
         <div class="status-dot load" id="dot-iwls"></div>
       </div>
       <div id="body-iwls">
         <div class="data-grid">
-          <div class="data-cell"><div class="cell-label">Niveau observé</div><div class="skeleton"></div><div class="skeleton sm" style="margin-top:4px;"></div></div>
+          <div class="data-cell"><div class="cell-label">Hauteur d'eau</div><div class="skeleton"></div><div class="skeleton sm" style="margin-top:4px;"></div></div>
           <div class="data-cell"><div class="cell-label">Temp. eau</div><div class="skeleton"></div><div class="skeleton sm" style="margin-top:4px;"></div></div>
         </div>
       </div>
@@ -403,7 +385,7 @@
       <div class="card-header">
         <div>
           <div class="card-title">Prochaines heures</div>
-          <div class="card-source">Environnement Canada · qc-109</div>
+          <div class="card-source">Environnement Canada · Longueuil</div>
         </div>
         <div class="status-dot load" id="dot-hourly"></div>
       </div>
@@ -424,7 +406,7 @@
       <div class="card-header">
         <div>
           <div class="card-title">Prévisions étendues — Fleuve</div>
-          <div class="card-source">Environnement Canada · m0000077</div>
+          <div class="card-source">Environnement Canada · Fleuve St-Laurent Montréal à Trois-Rivières</div>
         </div>
         <div class="status-dot load" id="dot-extended"></div>
       </div>

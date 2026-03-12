@@ -105,7 +105,7 @@
       align-items: center;
       gap: 8px;
       font-family: var(--mono);
-      font-size: 11px;
+      font-size: 12px;
       letter-spacing: 0.1em;
       color: #fca5a5;
       text-transform: uppercase;
@@ -122,7 +122,7 @@
     .alert-body {
       padding: 10px 14px 12px;
       font-family: var(--sans);
-      font-size: 13px;
+      font-size: 14px;
       color: #fca5a5;
       line-height: 1.6;
     }
@@ -138,8 +138,8 @@
 
     .section-title {
       font-family: var(--mono);
-      font-size: 12px;
-      letter-spacing: 0.17em;
+      font-size: 13px;
+      letter-spacing: 0.16em;
       color: var(--muted);
       text-transform: uppercase;
       padding: 18px 0 8px;
@@ -164,7 +164,7 @@
       justify-content: space-between;
       align-items: center;
     }
-    .card-title  { font-size: 20px; font-weight: 500; }
+    .card-title  { font-size: 13px; font-weight: 500; }
     .card-source { font-family: var(--mono); font-size: 9px; color: var(--muted); margin-top: 2px; }
 
     .status-dot {
@@ -332,9 +332,9 @@
 <main>
 
   <!-- ══════════════════════════════════
-       SECTION 1 — JOURNAL DU JOUR
+       SECTION 1 — JOURNAL DE BORD
        ══════════════════════════════════ -->
-  <div class="section-title">Journal du jour</div>
+  <div class="section-title">Journal de bord</div>
   <div class="cards-group">
 
     <!-- Vent marin (nœuds) -->
@@ -342,7 +342,7 @@
       <div class="card-header">
         <div>
           <div class="card-title">Prévisions maritimes</div>
-          <div class="card-source" id="src-marine">Environnement Canada · Fleuve St-Laurent, Montréal à Trois-Rivières</div>
+          <div class="card-source" id="src-marine">Environnement Canada · Montréal à Trois-Rivières</div>
         </div>
         <div class="status-dot load" id="dot-marine"></div>
       </div>
@@ -360,14 +360,14 @@
     <div class="card" id="card-iwls">
       <div class="card-header">
         <div>
-          <div class="card-title">Fleuve St-Laurent</div>
-          <div class="card-source">Pêches et Océans Canada - Montréal Jetée #1</div>
+          <div class="card-title">Fleuve — Jetée #1</div>
+          <div class="card-source">IWLS · Pêches et Océans Canada</div>
         </div>
         <div class="status-dot load" id="dot-iwls"></div>
       </div>
       <div id="body-iwls">
         <div class="data-grid">
-          <div class="data-cell"><div class="cell-label">Hauteur d'eau</div><div class="skeleton"></div><div class="skeleton sm" style="margin-top:4px;"></div></div>
+          <div class="data-cell"><div class="cell-label">Niveau observé</div><div class="skeleton"></div><div class="skeleton sm" style="margin-top:4px;"></div></div>
           <div class="data-cell"><div class="cell-label">Temp. eau</div><div class="skeleton"></div><div class="skeleton sm" style="margin-top:4px;"></div></div>
         </div>
       </div>
@@ -406,7 +406,7 @@
       <div class="card-header">
         <div>
           <div class="card-title">Prévisions étendues — Fleuve</div>
-          <div class="card-source">Environnement Canada · Fleuve St-Laurent Montréal à Trois-Rivières</div>
+          <div class="card-source">Environnement Canada · Montréal à Trois-Rivières</div>
         </div>
         <div class="status-dot load" id="dot-extended"></div>
       </div>
@@ -451,6 +451,27 @@ function degToCardinal(deg) {
 function kmhToKt(kmh) {
   if (kmh == null) return null;
   return Math.round(kmh * KMH_TO_KT);
+}
+
+// Coupe le texte de vent après "ce soir" / "tonight" pour ne garder que le jour en cours
+function truncateWind(text) {
+  // On coupe avant les mentions du lendemain ou des périodes suivantes
+  const cutMarkers = [
+    /[Vv]endredi\s+matin/,
+    /[Vv]endredi\s+soir/,
+    /[Ss]amedi/,
+    /[Ff]riday\s+morning/,
+    /[Ff]riday\s+evening/,
+    /[Ss]aturday/,
+    /[Pp]uis\s+(?:nord|sud|est|ouest|variable)/i,
+  ];
+  let result = text;
+  let cutAt = text.length;
+  for (const marker of cutMarkers) {
+    const m = text.search(marker);
+    if (m !== -1 && m < cutAt) cutAt = m;
+  }
+  return text.slice(0, cutAt).replace(/[,.\s]+$/, '') + '.';
 }
 
 function heure(isoStr) {
@@ -546,7 +567,7 @@ async function chargerMarine() {
     const issued = p.regularForecast?.issuedDatetimeLocal;
     if (issued) {
       document.getElementById('src-marine').textContent =
-        `EC · m0000077 · émis ${heure(issued)}`;
+        `Environnement Canada · Montréal à Trois-Rivières · émis ${heure(issued)}`;
     }
 
     // ── Alertes ──
@@ -572,17 +593,19 @@ async function chargerMarine() {
     // Extraire max/min du texte de température
     let tmax = null, tmin = null;
     if (temp) {
-      const maxM = temp.match(/[Mm]aximum\s+(?:aujourd'hui\s+)?(?:plus\s+)?(-?\d+)/);
-      const minM = temp.match(/[Mm]inimum\s+(?:cette\s+nuit\s+)?(?:moins\s+)?(-?\d+)/);
-      if (maxM) tmax = maxM[1];
-      if (minM) tmin = minM[1];
+      const maxM = temp.match(/[Mm]aximum\s+(?:aujourd['']hui\s+)?(?:(moins)\s+)?(plus\s+)?(\d+)/);
+      const minM = temp.match(/[Mm]inimum\s+(?:cette\s+nuit\s+)?(?:(moins)\s+)?(plus\s+)?(\d+)/);
+      if (maxM) tmax = (maxM[1] ? '-' : '') + maxM[3];
+      if (minM) tmin = (minM[1] ? '-' : '') + minM[3];
     }
 
     document.getElementById('body-marine').innerHTML = `
       <div class="data-grid">
         <div class="data-cell wide">
           <div class="cell-label">Vent prévu (nœuds)</div>
-          <div class="cell-value sm" style="color:var(--accent2);line-height:1.4;">${wind || 'N/D'}</div>
+          <div class="cell-value sm" style="color:var(--accent2);line-height:1.4;">${
+            truncateWind(wind || 'N/D')
+          }</div>
         </div>
         ${tmax != null
           ? `<div class="data-cell">${cellHTML('Temp. max', tmax, '°C', 'warm')}</div>`
@@ -634,7 +657,6 @@ async function chargerMarine() {
 //  LONGUEUIL EC — qc-109
 // ══════════════════════════════════════════════════════
 async function chargerLongueuil() {
-  setDot('dot-conditions', 'load');
   setDot('dot-hourly', 'load');
   try {
     const r = await fetch(EC_LONGUEUIL);
@@ -655,50 +677,7 @@ async function chargerLongueuil() {
       f.period?.textForecastName?.en?.includes('night')
     ) || forecasts[1];
 
-    const tmax = aujourdhui?.temperatures?.temperature?.find(t => t.class?.en === 'high')?.value?.fr;
-    const tmin = tonight?.temperatures?.temperature?.find(t => t.class?.en === 'low')?.value?.fr;
-    const cond = aujourdhui?.abbreviatedForecast?.textSummary?.fr || '—';
-    const resume = aujourdhui?.textSummary?.fr || '—';
 
-    // Vent en km/h converti en nœuds
-    const ventKmh = aujourdhui?.winds?.periods?.[0]?.speed?.value?.fr;
-    const ventDir = aujourdhui?.winds?.periods?.[0]?.direction?.fr || '';
-    const ventKt  = kmhToKt(ventKmh);
-    const ventGustKmh = aujourdhui?.winds?.periods?.[0]?.gust?.value?.fr;
-    const ventGustKt  = kmhToKt(ventGustKmh);
-
-    document.getElementById('body-conditions').innerHTML = `
-      <div class="data-grid">
-        <div class="data-cell">
-          <div class="cell-label">Max / Min</div>
-          <div class="cell-value" style="font-size:20px;">
-            <span style="color:var(--orange);">${tmax != null ? tmax + '°' : 'N/D'}</span>
-            <span style="color:var(--muted);font-size:16px;"> / </span>
-            <span style="color:var(--accent2);">${tmin != null ? tmin + '°' : 'N/D'}</span>
-          </div>
-          <div class="cell-time">C</div>
-        </div>
-        <div class="data-cell">
-          <div class="cell-label">Conditions</div>
-          <div class="cell-value sm">${cond}</div>
-        </div>
-        ${ventKt != null ? `
-        <div class="data-cell">
-          <div class="cell-label">Vent (nœuds)</div>
-          <div class="cell-value blue">${ventKt}<span class="unit"> kt</span></div>
-          <div class="cell-time">${ventDir}</div>
-        </div>
-        <div class="data-cell">
-          <div class="cell-label">Rafale (nœuds)</div>
-          <div class="cell-value ${ventGustKt > 25 ? 'red' : ''}">${ventGustKt != null ? ventGustKt : '—'}<span class="unit"> kt</span></div>
-        </div>` : ''}
-        <div class="data-cell wide">
-          <div class="cell-label">Résumé</div>
-          <div style="font-family:var(--sans);font-size:12px;color:#94a3b8;line-height:1.6;margin-top:4px;">${resume}</div>
-        </div>
-      </div>`;
-
-    setDot('dot-conditions', 'ok');
 
     // ── Prévisions horaires ──
     const horaires = p.hourlyForecastGroup?.hourlyForecasts || [];
@@ -735,11 +714,8 @@ async function chargerLongueuil() {
     }
 
   } catch (err) {
-    document.getElementById('body-conditions').innerHTML =
-      `<div class="error-msg">Erreur Longueuil : ${err.message}</div>`;
     document.getElementById('body-hourly').innerHTML =
       `<div class="error-msg">Erreur : ${err.message}</div>`;
-    setDot('dot-conditions', 'err');
     setDot('dot-hourly', 'err');
   }
 }
